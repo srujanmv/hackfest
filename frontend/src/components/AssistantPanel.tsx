@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { AIChatAssistant } from "@/components/AIChatAssistant";
 
 type Step =
   | "voice"
@@ -29,76 +29,32 @@ export function AssistantPanel({
   verificationMessage: string;
   ticketId?: string;
 }) {
-  const [voiceOn, setVoiceOn] = useState(false);
-
-  const lines = useMemo(() => {
-    const base = [
-      `I’m listening. Describe the issue clearly and include a landmark.`,
-      `I’ll classify the incident and route it to the right department.`
-    ];
-    if (step === "upload") {
-      return [
-        `I classified this as: ${issueType}.`,
-        `Please upload an image to verify the issue.`,
-        `Location noted: ${locationText}.`
-      ];
-    }
-    if (step === "ticket") {
-      return [
-        `Verification looks good. I can create a service ticket now.`,
-        `Assigned department: ${department}.`
-      ];
-    }
-    if (step === "done") {
-      return [
-        `Ticket created successfully.`,
-        ticketId ? `Your ticket ID is ${ticketId}.` : `Your ticket is created.`,
-        `Department has been notified successfully.`
-      ];
-    }
-    if (verificationMessage) return [verificationMessage];
-    if (transcript) return [`Captured complaint: “${transcript}”`];
-    return base;
-  }, [step, issueType, department, locationText, verificationMessage, transcript, ticketId]);
-
-  useEffect(() => {
-    if (!voiceOn) return;
-    if (typeof window === "undefined") return;
-    const utter = new SpeechSynthesisUtterance(lines[0] ?? "");
-    utter.rate = 1.02;
-    utter.pitch = 1.0;
-    utter.lang = "en-US";
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(utter);
-    return () => window.speechSynthesis.cancel();
-  }, [lines, voiceOn]);
+  const summary =
+    step === "upload"
+      ? "I classified your issue. Ask questions or upload an image to continue."
+      : step === "ticket"
+        ? "Verification passed. Ask for a summary or create the ticket."
+        : step === "done"
+          ? ticketId
+            ? `Ticket ${ticketId} is ready. Ask for the next steps or status details.`
+            : "Your report is complete. Ask anything about the incident."
+          : verificationMessage
+            ? verificationMessage
+            : transcript
+              ? `Current complaint: ${transcript}`
+              : "Describe the issue or ask what to do next.";
 
   return (
     <aside className="glass sticky top-[92px] rounded-2xl p-5">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <div className="text-sm font-semibold">Autonomous Assistant</div>
-          <div className="mt-1 text-xs text-white/60">
-            Human-like voice guidance (not a chat). It speaks the next best action.
-          </div>
+      <div>
+        <div className="text-sm font-semibold">Voice assistant</div>
+        <div className="mt-1 text-xs text-white/60">
+          Ask questions about this report, your ticket, or anything else.
         </div>
-        <button
-          onClick={() => setVoiceOn((v) => !v)}
-          className="rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-xs font-semibold transition hover:bg-white/10"
-        >
-          Voice: {voiceOn ? "On" : "Off"}
-        </button>
       </div>
 
-      <div className="mt-4 space-y-3">
-        {lines.map((l, i) => (
-          <div
-            key={i}
-            className="rounded-2xl border border-white/10 bg-black/20 px-3 py-3 text-sm text-white/80"
-          >
-            {l}
-          </div>
-        ))}
+      <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 px-3 py-3 text-sm text-white/80">
+        {summary}
       </div>
 
       <div className="mt-5 grid gap-3">
@@ -108,8 +64,23 @@ export function AssistantPanel({
           <div className="mt-2 text-xs text-white/55">Issue type</div>
           <div className="mt-1 text-sm font-semibold">{issueType}</div>
         </div>
+
+        <AIChatAssistant
+          ticketId={ticketId}
+          issueType={issueType}
+          department={department}
+          locationText={locationText}
+          title="Report copilot"
+          description="Use your microphone or type. The assistant speaks every reply and uses the live report context."
+          initialAssistantMessage={summary}
+          suggestions={[
+            "What should I do next?",
+            "Summarize this report",
+            "Which department is handling this?",
+            "Is my ticket resolved?"
+          ]}
+        />
       </div>
     </aside>
   );
 }
-

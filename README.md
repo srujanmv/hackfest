@@ -1,6 +1,6 @@
 # URBAN INCIDENT REPORTER
 
-Autonomous voice-agent civic infrastructure reporting platform (hackathon-ready, startup-style UI).
+Autonomous voice-agent civic infrastructure reporting platform with a hackathon-ready UI.
 
 ## Monorepo layout
 
@@ -12,7 +12,7 @@ Autonomous voice-agent civic infrastructure reporting platform (hackathon-ready,
 ### 1) Prereqs
 
 - Node.js 20+ (recommended)
-- (Optional) MongoDB connection string
+- Optional MongoDB connection string
 
 ### 2) Install
 
@@ -49,6 +49,6 @@ Open `http://localhost:3000`.
 
 ## Notes
 
-- Works without external AI keys by using a deterministic “agent simulation”.
-- If you add real AI keys later, the backend can switch to real classification (OpenAI/Gemini) with minimal changes.
-
+- The app works without external AI keys by using a deterministic fallback assistant.
+- Add `OPENAI_API_KEY` in `backend/.env` to use the OpenAI Responses API for open-ended answers.
+- Optional assistant model override: `OPENAI_MODEL=gpt-5-mini`.

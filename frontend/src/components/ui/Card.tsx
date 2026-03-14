@@ -1,14 +1,13 @@
 "use client";
 
 import clsx from "clsx";
-import type { HTMLAttributes } from "react";
-import { motion } from "framer-motion";
+import { motion, type HTMLMotionProps } from "framer-motion";
 
 export function Card({
   className,
   interactive,
   ...props
-}: HTMLAttributes<HTMLDivElement> & { interactive?: boolean }) {
+}: HTMLMotionProps<"div"> & { interactive?: boolean }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}

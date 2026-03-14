@@ -1,10 +1,9 @@
 "use client";
 
 import clsx from "clsx";
-import type { ButtonHTMLAttributes } from "react";
-import { motion } from "framer-motion";
+import { motion, type HTMLMotionProps } from "framer-motion";
 
-type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
+type Props = HTMLMotionProps<"button"> & {
   variant?: "primary" | "secondary" | "ghost";
   size?: "sm" | "md" | "lg";
 };

@@ -93,7 +93,16 @@ export async function requestOtp(phone: string) {
   });
 }
 
-export async function askAssistant(input: { question: string; ticketId?: string }) {
+export async function askAssistant(input: {
+  question: string;
+  ticketId?: string;
+  history?: { role: "user" | "assistant"; text: string }[];
+  context?: {
+    issueType?: string;
+    department?: string;
+    locationText?: string;
+  };
+}) {
   return await http<{ answer: string }>(`/api/assistant/ask`, {
     method: "POST",
     body: JSON.stringify(input)
